@@ -5,6 +5,16 @@ require('lib/simple_html_dom.php');
 $stopcode = '75882';
 $buses = array(154);
 
+$conf_file = $_SERVER['HOME'].'/.bus';
+if (file_exists($conf_file)) {
+    $info = json_decode(file_get_contents($conf_file));
+    if (isset($info->stop)) {
+        $stopcode = intval($info->stop);
+    }
+    if (isset($info->buses) && is_array($info->buses)) {
+        $buses = $info->buses;
+    }
+}
 
 $params = array_slice($argv,1);
 
@@ -12,6 +22,8 @@ $params = array_slice($argv,1);
 function help(){
     echo "bus: usage\n";
     echo "usage: bus [-s stop_number] [-b bus1[:bus2]]\n";
+    echo "~/.bus format: \n";
+    echo '{"buses":[123],"stop":12345}';
     die;
 }
 
