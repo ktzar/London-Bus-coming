@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
 require('lib/simple_html_dom.php');
+define('TFL_BUS_COUNTDOWN_BASEURL', "http://m.countdown.tfl.gov.uk/arrivals/");
 //Default params
 $stopcode = '75882';
 $buses = array(154);
@@ -47,7 +48,7 @@ for ($i=0;$i<count($params);$i++){
     }
 }
 function getBuses($buses, $stopcode) {
-    $html = file_get_html("http://m.countdown.tfl.gov.uk/arrivals/".$stopcode);
+    $html = file_get_html(TFL_BUS_COUNTDOWN_BASEURL.$stopcode);
     $ticker = $html->find('td.resRoute');
     $out = array();
     foreach ($ticker as $item){
