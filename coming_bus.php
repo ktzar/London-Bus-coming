@@ -93,4 +93,4 @@ try{
 }catch(Exception $e){
     echo $e;
 }
-die;
+exit(1);
