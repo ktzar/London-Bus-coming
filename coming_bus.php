@@ -68,18 +68,27 @@ for ($i=0;$i<count($params);$i++){
     if ($params[$i] == "-s" ) {
         if (!isset($params[$i+1])) {
             help();
+            exit(0);
         }else{
-            if ( ($stopcode = intval($params[$i+1])) == 0 )
+            if ( ($stopcode = intval($params[$i+1])) == 0 ) {
                 help();
+                exit(0);
+            }
         }
     }
     //Bus number
     if ($params[$i] == "-b" ) {
         if (!isset($params[$i+1])) {
             help();
+            exit(0);
         }else{
             $buses = explode(':',$params[$i+1]);
         }
+    }
+    //Help
+    if ($params[$i] == "-h" ) {
+        help();
+        exit(1);
     }
 }
 
