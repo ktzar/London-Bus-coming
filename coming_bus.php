@@ -1,9 +1,39 @@
 #!/usr/bin/php
 <?php
 require('lib/simple_html_dom.php');
-//Constants
 
-define('TFL_BUS_COUNTDOWN_BASEURL', "http://m.countdown.tfl.gov.uk/arrivals/");
+/**
+ * ComingBus 
+ * 
+ */
+class ComingBus
+{
+    //Constants
+    const TFL_BUS_COUNTDOWN_BASEURL = "http://m.countdown.tfl.gov.uk/arrivals/";
+
+    /**
+     * getBuses 
+     * 
+     * @param array $buses 
+     * @param int $stopcode 
+     * @static
+     * @access public
+     * @return array
+     */
+    static function getBuses($buses, $stopcode) {
+        $html = file_get_html(self::TFL_BUS_COUNTDOWN_BASEURL.$stopcode);
+        $ticker = $html->find('td.resRoute');
+        $out = array();
+        foreach ($ticker as $item){
+            $bus = trim($item->plaintext);
+            if (in_array($bus, $buses)) {
+                $out[] = array('bus'=>$bus, 'time'=>trim($item->next_sibling()->next_sibling()->plaintext));
+            }
+        }
+        return $out;
+    }
+}
+
 
 //Default params
 $stopcode = '75882';
@@ -21,11 +51,7 @@ if (file_exists($conf_file)) {
     }
 }
 
-
-
-/**
- * This function shows a help message
- */
+//This function shows a help message
 function help(){
     echo "bus: usage\n";
     echo "usage: bus [-s stop_number] [-b bus1[:bus2]]\n";
@@ -57,21 +83,10 @@ for ($i=0;$i<count($params);$i++){
     }
 }
 
-function getBuses($buses, $stopcode) {
-    $html = file_get_html(TFL_BUS_COUNTDOWN_BASEURL.$stopcode);
-    $ticker = $html->find('td.resRoute');
-    $out = array();
-    foreach ($ticker as $item){
-        $bus = trim($item->plaintext);
-        if (in_array($bus, $buses)) {
-            $out[] = array('bus'=>$bus, 'time'=>trim($item->next_sibling()->next_sibling()->plaintext));
-        }
-    }
-    return $out;
-}
 
 try{
-    $data = getBuses($buses, $stopcode);
+    $data = ComingBus::getBuses($buses, $stopcode);
+    echo "Stop $stopcode\n";
     foreach ($data as $bus_coming) {
         echo "{$bus_coming['bus']}\t{$bus_coming['time']}\n";
     }
